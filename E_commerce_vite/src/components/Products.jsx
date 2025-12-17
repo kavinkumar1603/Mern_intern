@@ -1,7 +1,20 @@
+import { useState, useMemo } from "react";
 import Card from "./Card";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion"; // eslint-disable-line no-unused-vars
 
 const Products = ({ products = [] }) => {
+    const [activeFilter, setActiveFilter] = useState("all");
+
+    const categories = useMemo(() => {
+        const uniqueCategories = ["all", ...new Set(products.map(p => p.category.toLowerCase()))];
+        return uniqueCategories;
+    }, [products]);
+
+    const filteredProducts = useMemo(() => {
+        if (activeFilter === "all") return products;
+        return products.filter(p => p.category.toLowerCase() === activeFilter);
+    }, [products, activeFilter]);
+
     const addToCart = async (product) => {
         const token = sessionStorage.getItem('token');
         if (!token) {
@@ -27,9 +40,7 @@ const Products = ({ products = [] }) => {
                 quantity: 1
             };
 
-            console.log("Sending Payload:", payload);
-
-            const response = await fetch('http://localhost:3000/cart', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/cart`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,7 +60,6 @@ const Products = ({ products = [] }) => {
                 alert('Product added to cart!');
             } else {
                 const errorData = await response.json();
-                console.error("Server Error:", errorData);
                 alert(`Failed: ${errorData.message || errorData.error || 'Unknown Error'}`);
             }
         } catch (error) {
@@ -58,156 +68,76 @@ const Products = ({ products = [] }) => {
         }
     };
 
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.1
-            }
-        }
-    };
-
-    const headerVariants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.6, ease: "easeOut" }
-        }
-    };
-
-    if (!products || products.length === 0) {
-        return (
-            <motion.section
-                id="products"
-                className="w-full bg-white py-12"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.8 }}
-            >
-                <div className="max-w-[1400px] mx-auto px-6">
-                    <div className="text-center py-12 bg-gray-50 rounded-3xl border border-gray-100">
-                        <h2 className="text-3xl md:text-5xl font-extrabold text-black mb-4 tracking-tight">
-                            New Arrivals
-                        </h2>
-                        <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-                            Our latest collection is on its way. Stay tuned for exclusive drops.
-                        </p>
-                    </div>
-                </div>
-            </motion.section>
-        );
-    }
-
     return (
-        <section id="products" className="w-full bg-white pt-0 pb-8 md:pb-12">
-            <div className="max-w-[1400px] mx-auto px-6">
-                <motion.div
-                    className="flex flex-col md:flex-row justify-between items-end mb-2 gap-4"
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                    variants={headerVariants}
-                >
-                    <div className="max-w-2xl">
-                        <span className="text-gray-500 font-bold tracking-wider uppercase text-sm mt-2 mb-2 block">
-                            Summer Collection 2024
-                        </span>
-                        <h2 className="text-4xl md:text-5xl font-extrabold text-black leading-tight mb-2">
-                            Curated Fashion <span className="text-black underline decoration-gray-300 decoration-4 underline-offset-4">For You</span>
-                        </h2>
-                        <p className="text-lg text-gray-600">
-                            Discover our handpicked selection of premium clothing and accessories designed for the modern lifestyle.
-                        </p>
+        <section id="products" className="w-full bg-white pt-28 pb-20 px-4 md:px-8">
+            <div className="max-w-[1400px] mx-auto">
+                <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+                    <div>
+                        <motion.span
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="block text-sm font-bold tracking-[0.2em] text-gray-400 uppercase mb-4"
+                        >
+                            Latest Drops
+                        </motion.span>
+                        <motion.h2
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="text-4xl md:text-6xl font-black text-black tracking-tighter leading-none"
+                        >
+                            CURATED <span className="text-gray-400">COLLECTION</span>
+                        </motion.h2>
                     </div>
+
+                    {/* Filter Buttons */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.2 }}
+                        className="flex flex-wrap gap-2"
+                    >
+                        {categories.map((cat) => (
+                            <button
+                                key={cat}
+                                onClick={() => setActiveFilter(cat)}
+                                className={`px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wider transition-all duration-300 border ${activeFilter === cat
+                                    ? "bg-black text-white border-black"
+                                    : "bg-white text-gray-500 border-gray-200 hover:border-black hover:text-black"
+                                    }`}
+                            >
+                                {cat}
+                            </button>
+                        ))}
+                    </motion.div>
+                </div>
+
+                <motion.div
+                    layout
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-12"
+                >
+                    <AnimatePresence mode="popLayout">
+                        {filteredProducts.map((product) => (
+                            <Card key={product._id || product.id} product={product} addToCart={addToCart} />
+                        ))}
+                    </AnimatePresence>
                 </motion.div>
 
-                {/* Shirts Section */}
-                {products.filter(p => p.category.toLowerCase().includes('shirt')).length > 0 && (
-                    <div className="mb-16">
-                        <motion.h3
-                            className="text-3xl font-bold text-black mb-8 border-b pb-4"
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.5 }}
-                        >
-                            Shirts
-                        </motion.h3>
-                        <motion.div
-                            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
-                            variants={containerVariants}
-                            initial="hidden"
-                            whileInView="visible"
-                            viewport={{ once: true, margin: "-50px" }}
-                        >
-                            {products
-                                .filter(product => product.category.toLowerCase().includes('shirt'))
-                                .map((product) => (
-                                    <Card key={product._id || product.id} product={product} addToCart={addToCart} />
-                                ))}
-                        </motion.div>
-                    </div>
-                )}
-
-                {/* Pants Section */}
-                {products.filter(p => p.category.toLowerCase().includes('pant')).length > 0 && (
-                    <div className="mb-16">
-                        <motion.h3
-                            className="text-3xl font-bold text-black mb-8 border-b pb-4"
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.5 }}
-                        >
-                            Pants
-                        </motion.h3>
-                        <motion.div
-                            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
-                            variants={containerVariants}
-                            initial="hidden"
-                            whileInView="visible"
-                            viewport={{ once: true, margin: "-50px" }}
-                        >
-                            {products
-                                .filter(product => product.category.toLowerCase().includes('pant'))
-                                .map((product) => (
-                                    <Card key={product._id || product.id} product={product} addToCart={addToCart} />
-                                ))}
-                        </motion.div>
-                    </div>
-                )}
-
-                {/* Other Items Section */}
-                {products.filter(p => !p.category.toLowerCase().includes('shirt') && !p.category.toLowerCase().includes('pant')).length > 0 && (
-                    <div className="mb-16">
-                        <motion.h3
-                            className="text-3xl font-bold text-black mb-8 border-b pb-4"
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.5 }}
-                        >
-                            Other Collection
-                        </motion.h3>
-                        <motion.div
-                            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
-                            variants={containerVariants}
-                            initial="hidden"
-                            whileInView="visible"
-                            viewport={{ once: true, margin: "-50px" }}
-                        >
-                            {products
-                                .filter(product => !product.category.toLowerCase().includes('shirt') && !product.category.toLowerCase().includes('pant'))
-                                .map((product) => (
-                                    <Card key={product._id || product.id} product={product} addToCart={addToCart} />
-                                ))}
-                        </motion.div>
-                    </div>
+                {filteredProducts.length === 0 && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="text-center py-20 text-gray-400"
+                    >
+                        No products found in this category.
+                    </motion.div>
                 )}
             </div>
         </section>
     );
 };
+
 export default Products;

@@ -1,30 +1,29 @@
 import { Link, useNavigate } from "react-router";
 import cart from "../assets/cart.png";
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useMotionValueEvent } from "framer-motion"; // eslint-disable-line no-unused-vars
 
 const Header = () => {
     const navigate = useNavigate();
-    const [userRole, setUserRole] = useState(null);
-    const [username, setUsername] = useState('');
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userRole, setUserRole] = useState(() => sessionStorage.getItem('userRole'));
+    const [username, setUsername] = useState(() => sessionStorage.getItem('username') || '');
+    const [isLoggedIn, setIsLoggedIn] = useState(() => sessionStorage.getItem('isLoggedIn') === 'true');
     const [cartCount, setCartCount] = useState(0);
+    const { scrollY } = useScroll();
+    const [isScrolled, setIsScrolled] = useState(false);
+
+    useMotionValueEvent(scrollY, "change", (latest) => {
+        setIsScrolled(latest > 50);
+    });
 
     useEffect(() => {
-        const loggedIn = sessionStorage.getItem('isLoggedIn');
-        const role = sessionStorage.getItem('userRole');
-        const name = sessionStorage.getItem('username');
-        setIsLoggedIn(loggedIn === 'true');
-        setUserRole(role);
-        setUsername(name || '');
-
         // Fetch cart count
         const fetchCartCount = async () => {
             const token = sessionStorage.getItem('token');
             if (!token) return;
 
             try {
-                const response = await fetch('http://localhost:3000/cart', {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/cart`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (response.ok) {
@@ -38,10 +37,10 @@ const Header = () => {
             }
         };
 
-        if (loggedIn === 'true') {
+        if (isLoggedIn) {
             fetchCartCount();
         }
-    }, []);
+    }, [isLoggedIn]);
 
     const handleLogout = () => {
         sessionStorage.clear();
@@ -53,31 +52,36 @@ const Header = () => {
 
     return (
         <motion.header
-            className="bg-white text-black px-6 py-4 shadow-sm sticky top-0 z-50 backdrop-blur-md bg-white/90"
+            className={`fixed top-0 w-full z-50 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-gray-100 ${isScrolled ? "py-3 shadow-sm" : "py-5"}`}
             initial={{ y: -100 }}
             animate={{ y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
         >
-            <div className="max-w-[1400px] mx-auto flex justify-between items-center">
+            <div className="max-w-[1400px] mx-auto px-6 flex justify-between items-center">
                 {/* Logo */}
-                <Link to="/" className="text-xl font-bold tracking-tight">
-                    AUREVIA
+                <Link to="/" className="text-2xl font-black tracking-tighter uppercase transition-colors text-black">
+                    Aurevia
                 </Link>
 
                 {/* Navigation Links */}
-                <nav className="hidden md:flex ml-20 items-center gap-8 text-sm font-medium">
-                    <Link to="/products" className="hover:text-gray-500 transition">
-                        Products
-                    </Link>
-                    <Link to="/orders" className="hover:text-gray-500 transition">
-                        Orders
-                    </Link>
-                    <Link to="/top-products" className="hover:text-gray-500 transition">
-                        Top products
-                    </Link>
+                <nav className="hidden md:flex items-center gap-8">
+                    {[
+                        { to: "/products", label: "Products" },
+                        { to: "/orders", label: "Orders" },
+                        { to: "/top-products", label: "Top Rated" }
+                    ].map((link) => (
+                        <Link
+                            key={link.to}
+                            to={link.to}
+                            className="text-xs font-bold uppercase tracking-widest hover:text-gray-500 transition-colors text-black"
+                        >
+                            {link.label}
+                        </Link>
+                    ))}
+
                     {userRole === 'admin' && (
-                        <Link to="/admin" className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition">
-                            Add Product
+                        <Link to="/admin" className="text-xs font-bold uppercase tracking-widest hover:text-gray-500 transition-colors text-black">
+                            Admin
                         </Link>
                     )}
                 </nav>
@@ -85,27 +89,35 @@ const Header = () => {
                 {/* Right Side - Cart & Actions */}
                 <div className="flex items-center gap-6">
 
-                    <Link to="/cart" className="relative hover:opacity-70 transition">
-                        <img src={cart} alt="Cart" className="w-6 h-6" />
+                    <Link to="/cart" className="relative group">
+                        <motion.img
+                            src={cart}
+                            alt="Cart"
+                            className="w-5 h-5 transition-all invert-0"
+                            whileTap={{ scale: 0.9 }}
+                        />
                         {cartCount > 0 && (
-                            <span className="absolute -top-2 -right-2 bg-black text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center border border-white">
+                            <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
                                 {cartCount}
                             </span>
                         )}
                     </Link>
+
                     {isLoggedIn ? (
-                        <div className="flex items-center gap-3">
-                            <span className="text-sm font-medium text-black">{username}</span>
+                        <div className="flex items-center gap-4">
+                            <span className="text-xs font-bold uppercase tracking-widest text-black">
+                                {username}
+                            </span>
                             <button
                                 onClick={handleLogout}
-                                className="px-5 py-2 bg-white text-black border border-black text-sm font-medium rounded-lg hover:bg-black hover:text-white transition"
+                                className="px-4 py-2 text-xs font-bold uppercase tracking-widest border transition-all duration-300 border-black text-black hover:bg-black hover:text-white"
                             >
                                 Logout
                             </button>
                         </div>
                     ) : (
                         <Link to="/login">
-                            <button className="px-5 py-2 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition">
+                            <button className="px-6 py-2 text-xs font-bold uppercase tracking-widest transition-all duration-300 bg-black text-white hover:bg-gray-800">
                                 Login
                             </button>
                         </Link>

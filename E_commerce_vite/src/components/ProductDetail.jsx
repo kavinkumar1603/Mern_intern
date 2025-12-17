@@ -1,6 +1,6 @@
 import Products from "./Products";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion } from "framer-motion"; // eslint-disable-line no-unused-vars
 
 const ProductDetail = () => {
     const [products, setProducts] = useState([]);
@@ -8,7 +8,7 @@ const ProductDetail = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('http://localhost:3000/products');
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/products`);
                 if (response.ok) {
                     const data = await response.json();
                     setProducts(data);

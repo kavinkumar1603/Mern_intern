@@ -1,20 +1,17 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion"; // eslint-disable-line no-unused-vars
 
 const Orders = () => {
     const username = sessionStorage.getItem('username') || 'Guest';
-
     const [orders, setOrders] = useState([]);
 
     useEffect(() => {
         const fetchOrders = async () => {
             try {
                 const token = sessionStorage.getItem('token');
-                if (!token) {
-                    console.error('No token found');
-                    return;
-                }
+                if (!token) return;
 
-                const response = await fetch('http://localhost:3000/orders', {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/orders`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
@@ -24,12 +21,6 @@ const Orders = () => {
                 if (response.ok) {
                     const data = await response.json();
                     setOrders(data);
-                } else {
-                    console.error('Failed to fetch orders:', response.statusText);
-                    if (response.status === 401) {
-                        // Optional: Handle unauthorized access, like redirecting to login
-                        console.error('Unauthorized access - valid token required');
-                    }
                 }
             } catch (error) {
                 console.error('Error fetching orders:', error);
@@ -38,92 +29,95 @@ const Orders = () => {
         fetchOrders();
     }, []);
 
-    const getStatusColor = (status) => {
-        switch (status) {
-            case 'Delivered':
-                return 'bg-black text-white';
-            case 'Processing':
-                return 'bg-white border border-black text-black';
-            case 'Shipped':
-                return 'bg-gray-200 text-black';
+    const getStatusStyle = (status) => {
+        switch (status?.toLowerCase()) {
+            case 'delivered':
+                return 'bg-green-100 text-green-800 border-green-200';
+            case 'processing':
+                return 'bg-yellow-50 text-yellow-800 border-yellow-200';
+            case 'shipped':
+                return 'bg-blue-50 text-blue-800 border-blue-200';
             default:
-                return 'bg-gray-100 text-gray-800';
+                return 'bg-gray-100 text-gray-800 border-gray-200';
         }
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Page Title */}
-            <div className="bg-white border-b">
-                <div className="container mx-auto px-6 py-6">
-                    <h1 className="text-3xl font-bold text-black">My Orders</h1>
-                    <p className="text-sm text-gray-500 mt-1">Welcome back, {username}</p>
-                </div>
-            </div>
+        <div className="min-h-screen bg-white pt-28 pb-20 px-6">
+            <div className="max-w-[1400px] mx-auto">
+                <header className="mb-16 border-b border-black pb-6">
+                    <span className="block text-sm font-bold tracking-[0.2em] text-gray-400 uppercase mb-2">
+                        Welcome back, {username}
+                    </span>
+                    <h1 className="text-5xl md:text-7xl font-black text-black uppercase tracking-tighter leading-none">
+                        Order History
+                    </h1>
+                </header>
 
-            {/* Orders List */}
-            <div className="container mx-auto p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {orders.map((order) => (
-                        <div key={order._id} className="bg-white rounded-xl shadow-lg p-6 hover:shadow-2xl transition-shadow border border-gray-100">
-                            {/* Order Header */}
-                            <div className="flex justify-between items-start mb-4 pb-4 border-b-2 border-gray-100">
+                <div className="grid gap-8">
+                    {orders.map((order, index) => (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            key={order._id}
+                            className="group border border-gray-100 p-8 hover:border-black transition-colors duration-300"
+                        >
+                            <div className="flex flex-col md:flex-row justify-between md:items-start gap-6 mb-8 border-b border-gray-100 pb-6">
                                 <div>
-                                    <h2 className="text-lg font-bold text-black mb-1">
-                                        {order.paymentId || order._id}
-                                    </h2>
-                                    <p className="text-gray-500 text-xs">
-                                        {new Date(order.createdAt).toLocaleDateString('en-US', {
+                                    <div className="flex items-center gap-4 mb-2">
+                                        <h2 className="text-xl font-bold text-black uppercase tracking-tight">
+                                            #{order.paymentId || order._id}
+                                        </h2>
+                                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${getStatusStyle(order.status)}`}>
+                                            {order.status || 'Processing'}
+                                        </span>
+                                    </div>
+                                    <p className="text-sm text-gray-400 font-medium">
+                                        Placed on {new Date(order.createdAt).toLocaleDateString('en-US', {
                                             year: 'numeric',
-                                            month: 'short',
+                                            month: 'long',
                                             day: 'numeric'
                                         })}
                                     </p>
                                 </div>
-                                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(order.status || 'Processing')}`}>
-                                    {order.status || 'Processing'}
-                                </span>
-                            </div>
-
-                            {/* Order Items */}
-                            <div className="mb-4">
-                                <h3 className="font-semibold text-black mb-3 text-sm">Items:</h3>
-                                <div className="space-y-2">
-                                    {order.items.map((item, index) => (
-                                        <div key={index} className="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
-                                            <div>
-                                                <p className="font-medium text-black text-sm">{item.name}</p>
-                                                <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
-                                            </div>
-                                            <p className="font-semibold text-black text-sm">
-                                                ₹{(item.price || 0).toFixed(2)}
-                                            </p>
-                                        </div>
-                                    ))}
+                                <div className="text-right">
+                                    <span className="block text-sm text-gray-400 font-bold uppercase tracking-widest mb-1">Total Amount</span>
+                                    <span className="text-3xl font-black text-black tracking-tight">
+                                        ₹{(order.totalAmount || 0).toFixed(2)}
+                                    </span>
                                 </div>
                             </div>
 
-                            {/* Order Total */}
-                            <div className="pt-4 border-t-2 border-gray-100 flex justify-between items-center">
-                                <span className="font-semibold text-black">Total:</span>
-                                <span className="text-2xl font-bold text-black">
-                                    ₹{(order.totalAmount || 0).toFixed(2)}
-                                </span>
+                            <div className="grid gap-4">
+                                {order.items.map((item, idx) => (
+                                    <div key={idx} className="flex justify-between items-center py-2">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-2 h-2 bg-black rounded-full" />
+                                            <div>
+                                                <p className="font-bold text-black text-sm uppercase tracking-wide">{item.name}</p>
+                                                <p className="text-xs text-gray-400 uppercase tracking-widest">Qty: {item.quantity}</p>
+                                            </div>
+                                        </div>
+                                        <span className="font-bold text-black text-sm">
+                                            ₹{(item.price || 0).toFixed(2)}
+                                        </span>
+                                    </div>
+                                ))}
                             </div>
-                        </div>
+                        </motion.div>
                     ))}
-                </div>
 
-                {/* Empty State */}
-                {orders.length === 0 && (
-                    <div className="bg-white rounded-lg shadow-lg p-12 text-center">
-                        <h2 className="text-2xl font-bold text-black mb-2">No Orders Yet</h2>
-                        <p className="text-gray-600">Start shopping to see your orders here!</p>
-                    </div>
-                )}
+                    {orders.length === 0 && (
+                        <div className="text-center py-20 border border-dashed border-gray-200">
+                            <h3 className="text-2xl font-black text-gray-300 uppercase tracking-tight">No Orders Found</h3>
+                            <p className="text-gray-400 mt-2">You haven't placed any orders yet.</p>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );
 }
 
-export default Orders
+export default Orders;

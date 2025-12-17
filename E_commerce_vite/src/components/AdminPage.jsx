@@ -18,7 +18,7 @@ const AdminPage = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await fetch('http://localhost:3000/api/products');
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products`);
                 if (response.ok) {
                     const data = await response.json();
                     setProducts(data);
@@ -56,7 +56,7 @@ const AdminPage = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:3000/api/products', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -84,7 +84,7 @@ const AdminPage = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:3000/api/products/${id}`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products/${id}`, {
                 method: 'DELETE'
             });
 

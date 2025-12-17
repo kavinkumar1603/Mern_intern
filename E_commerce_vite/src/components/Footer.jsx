@@ -1,37 +1,51 @@
 import linkedin from '../assets/li.png';
 import git from '../assets/git1.png';
 import instagram from '../assets/insta.png';
-import { motion } from 'framer-motion';
+import { motion } from 'framer-motion'; // eslint-disable-line no-unused-vars
 
 const Footer = () => {
     return (
         <motion.footer
-            className="bg-white py-4 border-t border-gray-700 mt-auto"
+            className="bg-black text-white py-12 mt-auto"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
         >
-            <div className="max-w-7xl mx-auto px-8 flex justify-between items-center">
+            <div className="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
 
                 {/* Left text */}
-                <div className="text-sm font-serif text-black whitespace-nowrap">
-                    © 2025 Pantaloon.com Pvt Ltd. All Rights Reserved.
+                <div className="flex flex-col items-center md:items-start gap-2">
+                    <span className="text-2xl font-black tracking-tighter uppercase">Aurevia</span>
+                    <span className="text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+                        © 2025 Aurevia Inc. All Rights Reserved.
+                    </span>
                 </div>
 
                 {/* Center Navigation */}
-                <nav className="flex gap-8 text-sm">
-                    <p className="text-black font-serif hover:text-gray-300 cursor-pointer">Cookies</p>
-                    <p className="text-black font-serif hover:text-gray-300 cursor-pointer">Privacy Policy</p>
-                    <p className="text-black font-serif hover:text-gray-300 cursor-pointer">Terms and Conditions</p>
-                    <p className="text-black font-serif hover:text-gray-300 cursor-pointer">Sitemap</p>
+                <nav className="flex flex-wrapjustify-center gap-8">
+                    {['Cookies', 'Privacy Policy', 'Terms', 'Sitemap'].map((item) => (
+                        <a
+                            key={item}
+                            href="#"
+                            className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors"
+                        >
+                            {item}
+                        </a>
+                    ))}
                 </nav>
 
                 {/* Right icons */}
                 <div className="flex items-center gap-6">
-                    <motion.img whileHover={{ scale: 1.2 }} src={linkedin} alt="LinkedIn" className="w-6 h-6 hover:opacity-80 cursor-pointer grayscale" />
-                    <motion.img whileHover={{ scale: 1.2 }} src={git} alt="GitHub" className="w-6 h-6 hover:opacity-80 cursor-pointer grayscale" />
-                    <motion.img whileHover={{ scale: 1.2 }} src={instagram} alt="Instagram" className="w-6 h-6 hover:opacity-80 cursor-pointer grayscale" />
+                    {[linkedin, git, instagram].map((icon, index) => (
+                        <motion.img
+                            key={index}
+                            whileHover={{ scale: 1.1, opacity: 1 }}
+                            src={icon}
+                            alt="Social"
+                            className="w-5 h-5 opacity-50 cursor-pointer invert filter"
+                        />
+                    ))}
                 </div>
 
             </div>

@@ -1,127 +1,136 @@
 import hero1 from "../assets/hero1.jpg";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion"; // eslint-disable-line no-unused-vars
+import { useRef } from "react";
 
 const Hero = () => {
+    const containerRef = useRef(null);
     const { scrollY } = useScroll();
-    const y = useTransform(scrollY, [0, 500], [0, 150]); // Parallax effect
 
-    const containerVariants = {
-        hidden: { opacity: 0 },
+    // Smooth spring physics for parallax
+    const scrollYSpring = useSpring(scrollY, { stiffness: 100, damping: 30, restDelta: 0.001 });
+
+    // Parallax transformations
+    const y = useTransform(scrollYSpring, [0, 1000], [0, 400]);
+    const scale = useTransform(scrollYSpring, [0, 1000], [1, 1.15]);
+    const textY = useTransform(scrollYSpring, [0, 500], [0, 200]);
+    const opacity = useTransform(scrollYSpring, [0, 400], [1, 0]);
+
+    const fadeInUpVariants = {
+        hidden: { opacity: 0, y: 40 },
         visible: {
             opacity: 1,
+            y: 0,
+            transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
+        }
+    };
+
+    const staggerContainer = {
+        hidden: {},
+        visible: {
             transition: {
-                staggerChildren: 0.2,
-                delayChildren: 0.3
+                staggerChildren: 0.15,
+                delayChildren: 0.2
             }
         }
     };
 
-    const itemVariants = {
-        hidden: { opacity: 0, y: 30 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.8, ease: "easeOut" }
-        }
-    };
-
     return (
-        <section id="home" className="w-full bg-white px-4 pt-4 pb-0 sm:px-6 lg:px-8 overflow-hidden">
-            <div className="max-w-[1400px] mx-auto">
-                {/* Rounded Hero Container */}
-                <div className="relative w-full h-[550px] sm:h-[600px] rounded-3xl overflow-hidden bg-gray-900 shadow-2xl">
-                    {/* Background Image with Parallax */}
-                    <motion.div
-                        className="absolute inset-0 w-full h-[120%] bg-cover bg-center grayscale"
-                        style={{
-                            backgroundImage: `url(${hero1})`,
-                            y
-                        }}
-                    >
-                        {/* Dark Gradient Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent"></div>
-                    </motion.div>
+        <section ref={containerRef} id="home" className="relative w-full h-screen min-h-[600px] overflow-hidden bg-black">
+            {/* Parallax Background */}
+            <motion.div
+                className="absolute inset-0 w-full h-full"
+                style={{ y, scale }}
+            >
+                <div
+                    className="absolute inset-0 bg-cover bg-center"
+                    style={{ backgroundImage: `url(${hero1})` }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
+                <div className="absolute inset-0 bg-black/20 backdrop-blur-[1px]" />
+            </motion.div>
 
-                    {/* Content Container */}
-                    <motion.div
-                        className="relative z-10 h-full flex flex-col justify-between p-8 sm:p-10 lg:p-12"
-                        variants={containerVariants}
-                        initial="hidden"
-                        animate="visible"
-                    >
-                        {/* Top Content */}
-                        <div className="max-w-xl space-y-6">
-                            {/* Main Heading */}
-                            <motion.h1
-                                className="text-4xl sm:text-5xl lg:text-8xl font-black text-white leading-tight tracking-tight"
-                                variants={itemVariants}
-                            >
-                                Wear the <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-100 to-gray-500">Culture.</span>
-                                <br />
-                                Own the <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-100 to-gray-500">Streets.</span>
-                            </motion.h1>
-
-                            {/* Subheading */}
-                            <motion.p
-                                className="text-sm sm:text-base text-gray-300 leading-relaxed max-w-md font-medium"
-                                variants={itemVariants}
-                            >
-                                Bold designs. Premium quality. Streetwear that speaks.
-                                <br />
-                                Elevate your style with pieces made to stand out.
-                            </motion.p>
-
-                            {/* CTA Buttons */}
-                            <motion.div
-                                className="flex flex-wrap items-center gap-4 pt-4"
-                                variants={itemVariants}
-                            >
-                                <a href="#products">
-                                    <motion.button
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                        className="px-8 py-4 bg-white text-black text-sm font-bold rounded-full shadow-[0_0_20px_rgba(255,255,255,0.3)] flex items-center gap-2"
-                                    >
-                                        Shop Now
-                                        <span className="text-lg">→</span>
-                                    </motion.button>
-                                </a>
-                                <a href="#products">
-                                    <motion.button
-                                        whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
-                                        whileTap={{ scale: 0.95 }}
-                                        className="px-8 py-4 bg-transparent text-white text-sm font-bold rounded-full border border-white/30 backdrop-blur-sm"
-                                    >
-                                        Explore Collection
-                                    </motion.button>
-                                </a>
-                            </motion.div>
-                        </div>
-
-                        {/* Bottom Section - Feature Cards */}
-                        <motion.div
-                            className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-auto"
-                            variants={containerVariants}
+            {/* Content */}
+            <motion.div
+                className="relative z-10 h-full max-w-[1400px] mx-auto px-6 flex flex-col justify-center pt-24"
+                style={{ y: textY, opacity }}
+                variants={staggerContainer}
+                initial="hidden"
+                animate="visible"
+            >
+                <div className="max-w-4xl space-y-2">
+                    <div className="overflow-hidden">
+                        <motion.span
+                            className="inline-block text-sm md:text-base font-bold tracking-[0.2em] text-gray-300 uppercase mb-4"
+                            variants={fadeInUpVariants}
                         >
-                            {/* Comfort Card */}
-                            <motion.div className="space-y-2" variants={itemVariants}>
-                                <h3 className="text-white font-semibold mt-6 text-lg border-l-2 border-white pl-3">Comfort</h3>
-                                <p className="text-gray-400 text-xs leading-relaxed pl-3">
-                                    Designed for all-day wear. Because style should never come at the cost of comfort.
-                                </p>
-                            </motion.div>
+                            Establish Your Presence
+                        </motion.span>
+                    </div>
 
-                            {/* Style Card */}
-                            <motion.div className="space-y-2" variants={itemVariants}>
-                                <h3 className="text-white font-semibold mt-6 text-lg border-l-2 border-white pl-3">Style</h3>
-                                <p className="text-gray-400 text-xs leading-relaxed pl-3">
-                                    Bold, effortless, and made to stand out. Our pieces turn heads while staying true to the culture.
-                                </p>
-                            </motion.div>
-                        </motion.div>
+                    <div className="overflow-hidden">
+                        <motion.h1
+                            className="text-5xl md:text-7xl lg:text-9xl font-black text-white tracking-tighter leading-[0.9]"
+                            variants={fadeInUpVariants}
+                        >
+                            WEAR THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-300 to-gray-500">CULTURE.</span>
+                        </motion.h1>
+                    </div>
+
+                    <div className="overflow-hidden">
+                        <motion.h1
+                            className="text-5xl md:text-7xl lg:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-200 via-gray-100 to-white tracking-tighter leading-[0.9]"
+                            variants={fadeInUpVariants}
+                        >
+                            OWN THE STREETS.
+                        </motion.h1>
+                    </div>
+
+                    <div className="max-w-xl mt-8 overflow-hidden">
+                        <motion.p
+                            className="text-lg md:text-xl text-gray-300 font-medium leading-relaxed"
+                            variants={fadeInUpVariants}
+                        >
+                            Bold designs. Premium materials. Meticulous craftsmanship.
+                            Step into a world where fashion meets function in the most sophisticated way.
+                        </motion.p>
+                    </div>
+
+                    <motion.div
+                        className="flex flex-wrap items-center gap-6 pt-10"
+                        variants={fadeInUpVariants}
+                    >
+                        <a href="#products">
+                            <motion.button
+                                whileHover={{ scale: 1.05, backgroundColor: "#ffffff", color: "#000000" }}
+                                whileTap={{ scale: 0.95 }}
+                                className="px-10 py-5 bg-white text-black text-sm font-bold tracking-widest uppercase rounded-none transition-colors duration-300"
+                            >
+                                Shop Collection
+                            </motion.button>
+                        </a>
+                        <a href="#products">
+                            <motion.button
+                                whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
+                                whileTap={{ scale: 0.95 }}
+                                className="px-10 py-5 bg-transparent text-white text-sm font-bold tracking-widest uppercase rounded-none border border-white/40 backdrop-blur-sm hover:border-white transition-colors duration-300"
+                            >
+                                View Lookbook
+                            </motion.button>
+                        </a>
                     </motion.div>
                 </div>
-            </div>
+            </motion.div>
+
+            {/* Scroll Indicator */}
+            <motion.div
+                className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1, y: [0, 10, 0] }}
+                transition={{ delay: 1, duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                style={{ opacity }}
+            >
+                <div className="w-[1px] h-16 bg-gradient-to-b from-transparent via-white to-transparent opacity-50" />
+            </motion.div>
         </section>
     );
 };

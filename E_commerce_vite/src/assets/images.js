@@ -9,8 +9,7 @@ import crd7 from './crd7.webp';
 import crd8 from './crd8.avif';
 import crd9 from './crd9.jpg';
 import crd10 from './crd10.webp';
-import hero from './hero.jpg';
-import hero1 from './hero1.jpg';
+
 
 export const productImages = {
     "/images/crd1.jpg": crd1,

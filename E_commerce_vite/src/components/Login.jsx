@@ -1,36 +1,34 @@
 import { useState, useRef } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 import { toast } from 'react-toastify';
-import { motion } from "framer-motion";
+import { motion } from "framer-motion"; // eslint-disable-line no-unused-vars
+import hero1 from "../assets/hero1.jpg"; // Re-using the hero image for consistency
 
 const Login = () => {
-    const [Email, setEmail] = useState("");
-    const [error, setError] = useState(""); // State for login errors
+    const [email, setEmail] = useState("");
+    const [error, setError] = useState("");
     const passref = useRef('');
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(""); // Clear previous errors
+        setError("");
 
         const password = passref.current.value;
 
-        if (!Email || !password) {
-            setError("Please enter Email and password");
-            // toast.error("Please enter Email and password"); // Optional: Keep toast if desired, but user asked for frontend display
+        if (!email || !password) {
+            setError("Please enter email and password");
             return;
         }
 
         try {
-            // Note: Ensure your backend server is running and listening on /auth/login
-            const response = await fetch('http://localhost:3000/auth/login', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: Email, password })
+                body: JSON.stringify({ email, password })
             });
 
             const data = await response.json();
-            console.log('Server Response:', data); // View this in browser console
 
             if (response.ok) {
                 if (data.token) {
@@ -39,8 +37,7 @@ const Login = () => {
                     sessionStorage.setItem('token', data.token);
                     const role = data.role || 'user';
                     sessionStorage.setItem('userRole', role);
-                    // Since server data doesn't return user email explicitly at root, fallback to input state
-                    sessionStorage.setItem('username', Email);
+                    sessionStorage.setItem('username', email);
 
                     if (role === 'admin') {
                         navigate('/admin');
@@ -48,92 +45,142 @@ const Login = () => {
                         navigate('/products');
                     }
                 } else {
-                    console.error("Login response missing token:", data);
-                    setError("Login successful but received invalid data from server.");
+                    setError("Login successful but received invalid data.");
                 }
             } else {
-                // Determine error message from server or default
-                const errorMessage = data.message || "Invalid password or login failed";
-                setError(errorMessage);
-                // toast.error(errorMessage);
+                setError(data.message || "Invalid credentials");
             }
         } catch (error) {
             console.error('Login error:', error);
-            setError("An error occurred during login. Ensure server is running.");
+            setError("Server connection failed");
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-white px-4">
-            <div className="w-full max-w-md">
-                {/* Login Card */}
-                <motion.div
-                    className="bg-white border-2 border-gray-300 rounded-2xl shadow-2xl p-8"
-                    initial={{ opacity: 0, y: 50 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, ease: "easeOut" }}
-                >
-                    {/* Header */}
-                    <div className="text-center mb-8">
-                        <h1 className="text-4xl font-serif font-bold text-black mb-2">Welcome Back</h1>
-                        <p className="text-gray-600">Sign in to continue shopping</p>
+        <div className="min-h-screen flex bg-white">
+            {/* Left Side - Image */}
+            <motion.div
+                className="hidden lg:block lg:w-1/2 relative overflow-hidden bg-black"
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+            >
+                <div
+                    className="absolute inset-0 bg-cover bg-center opacity-60 mix-blend-overlay"
+                    style={{ backgroundImage: `url(${hero1})` }}
+                />
+                <div className="absolute inset-0 flex flex-col justify-between p-12 z-10">
+                    <Link to="/" className="text-white text-2xl font-black tracking-tighter uppercase">Aurevia</Link>
+                    <div>
+                        <h1 className="text-6xl font-black text-white leading-none tracking-tighter mb-4">
+                            ELEVATE <br /> YOUR STYLE.
+                        </h1>
+                        <p className="text-gray-300 max-w-md font-medium">
+                            Join our community of trendsetters. Experience fashion that speaks before you do.
+                        </p>
+                    </div>
+                </div>
+            </motion.div>
+
+            {/* Right Side - Form */}
+            <motion.div
+                className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-24"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+            >
+                <div className="w-full max-w-md space-y-12">
+                    <div className="text-center lg:text-left">
+                        <h2 className="text-4xl font-black text-black uppercase tracking-tighter mb-2">Welcome Back</h2>
+                        <p className="text-gray-500 font-medium">Please enter your details to sign in.</p>
                     </div>
 
-                    {/* Error Message Display */}
                     {error && (
-                        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded relative" role="alert">
-                            <span className="block sm:inline">{error}</span>
-                        </div>
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            className="bg-red-50 text-red-600 px-4 py-3 text-sm font-bold border-l-4 border-red-600"
+                        >
+                            {error}
+                        </motion.div>
                     )}
 
-                    {/* Login Form */}
-                    <form className="space-y-6">
-                        {/* Username Field */}
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-semibold text-black mb-2">
-                                Email
-                            </label>
-                            <input
-                                type="text"
-                                id="email"
-                                value={Email}
-                                onChange={(e) => {
-                                    setEmail(e.target.value);
-                                    setError(""); // Clear error on typing
-                                }}
-                                required
-                                className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:outline-none focus:border-black transition text-black placeholder-gray-400"
-                                placeholder="Enter your email"
-                            />
+                    <form className="space-y-8" onSubmit={handleSubmit}>
+                        <div className="space-y-6">
+                            <div className="group relative z-0 w-full mb-6 group">
+                                <input
+                                    type="text"
+                                    name="email"
+                                    id="email"
+                                    className="block py-4 px-0 w-full text-sm text-black bg-transparent border-0 border-b-2 border-gray-200 appearance-none focus:outline-none focus:ring-0 focus:border-black peer transition-colors"
+                                    placeholder=" "
+                                    required
+                                    value={email}
+                                    onChange={(e) => {
+                                        setEmail(e.target.value);
+                                        setError("");
+                                    }}
+                                />
+                                <label
+                                    htmlFor="email"
+                                    className="peer-focus:font-bold absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 uppercase tracking-widest"
+                                >
+                                    Email Address
+                                </label>
+                            </div>
+
+                            <div className="group relative z-0 w-full mb-6 group">
+                                <input
+                                    type="password"
+                                    name="password"
+                                    id="password"
+                                    className="block py-4 px-0 w-full text-sm text-black bg-transparent border-0 border-b-2 border-gray-200 appearance-none focus:outline-none focus:ring-0 focus:border-black peer transition-colors"
+                                    placeholder=" "
+                                    required
+                                    ref={passref}
+                                    onChange={() => setError("")}
+                                />
+                                <label
+                                    htmlFor="password"
+                                    className="peer-focus:font-bold absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-black peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 uppercase tracking-widest"
+                                >
+                                    Password
+                                </label>
+                            </div>
                         </div>
 
-                        {/* Password Field */}
-                        <div>
-                            <label htmlFor="password" className="block text-sm font-semibold text-black mb-2">
-                                Password
-                            </label>
-                            <input
-                                type="password"
-                                id="password"
-                                ref={passref}
-                                onChange={() => setError("")} // Clear error on typing
-                                required
-                                className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:outline-none focus:border-black transition text-black placeholder-gray-400"
-                                placeholder="Enter your password"
-                            />
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                                <input id="remember-me" name="remember-me" type="checkbox" className="h-4 w-4 text-black focus:ring-black border-gray-300 rounded" />
+                                <label htmlFor="remember-me" className="ml-2 block text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                    Remember me
+                                </label>
+                            </div>
+                            <div className="text-xs">
+                                <a href="#" className="font-bold text-black hover:text-gray-600 uppercase tracking-widest">
+                                    Forgot password?
+                                </a>
+                            </div>
                         </div>
 
-                        {/* Submit Button */}
-                        <button
+                        <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
                             type="submit"
-                            onClick={handleSubmit}
-                            className="w-full bg-black hover:bg-gray-800 text-white font-semibold py-3 rounded-lg transition shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+                            className="w-full flex justify-center py-4 px-4 border border-transparent text-sm font-bold text-white bg-black hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black uppercase tracking-widest"
                         >
                             Log In
-                        </button>
+                        </motion.button>
+
+                        <p className="border-t border-gray-100 pt-6 text-center text-xs text-gray-500 font-medium">
+                            DON'T HAVE AN ACCOUNT?{' '}
+                            <Link to="/signup" className="font-bold text-black hover:underline uppercase tracking-widest">
+                                SIGN UP
+                            </Link>
+                        </p>
                     </form>
-                </motion.div>
-            </div>
+                </div>
+            </motion.div>
         </div>
     );
 };
