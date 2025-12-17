@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "name": "Premium Chinos Collection",
+    "originalPrice": 3499,
+    "sellingPrice": 2499,
+    "quantity": 1
+  },
+  {
+    "id": 2,
+    "name": "Premium Chinos Collection",
+    "originalPrice": 3499,
+    "sellingPrice": 2499,
+    "quantity": 1
+  },
+  {
+    "id": 3,
+    "name": "Checkered Formal Shirts",
+    "originalPrice": 2499,
+    "sellingPrice": 1799,
+    "quantity": 1
+  },
+  {
+    "id": 4,
+    "name": "Casual Brown Shirt",
+    "originalPrice": 1899,
+    "sellingPrice": 1399,
+    "quantity": 1
+  },
+  {
+    "id": 5,
+    "name": "Penguin Graphic T-Shirt",
+    "originalPrice": 1999,
+    "sellingPrice": 1299,
+    "quantity": 1
+  },
+  {
+    "id": 6,
+    "name": "Premium Chinos Collection",
+    "originalPrice": 3499,
+    "sellingPrice": 2499,
+    "quantity": 1
+  }
+]

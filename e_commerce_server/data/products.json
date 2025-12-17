@@ -1,0 +1,92 @@
+[
+    {
+        "id": 1,
+        "name": "Penguin Graphic T-Shirt",
+        "category": "T-Shirts",
+        "image": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab",
+        "originalPrice": 1999,
+        "sellingPrice": 1299,
+        "description": "Stylish penguin graphic t-shirt"
+    },
+    {
+        "id": 2,
+        "name": "Premium Chinos Collection",
+        "category": "Pants",
+        "image": "https://images.unsplash.com/photo-1542272604-787c3835535d",
+        "originalPrice": 3499,
+        "sellingPrice": 2499,
+        "description": "Comfortable chino pants in multiple colors"
+    },
+    {
+        "id": 3,
+        "name": "Checkered Formal Shirts",
+        "category": "Shirts",
+        "image": "https://images.unsplash.com/photo-1520962918287-7448c2878f65",
+        "originalPrice": 2499,
+        "sellingPrice": 1799,
+        "description": "Classic checkered formal shirts"
+    },
+    {
+        "id": 4,
+        "name": "Casual Brown Shirt",
+        "category": "Shirts",
+        "image": "https://images.unsplash.com/photo-1603252109360-9096f2c8910d",
+        "originalPrice": 1899,
+        "sellingPrice": 1399,
+        "description": "Trendy casual brown shirt"
+    },
+    {
+        "id": 5,
+        "name": "Striped Blue Shirt",
+        "category": "Shirts",
+        "image": "https://images.unsplash.com/photo-1586363104866-8f7f0c53028e",
+        "originalPrice": 2199,
+        "sellingPrice": 1599,
+        "description": "Premium striped formal shirt"
+    },
+    {
+        "id": 6,
+        "name": "Grey Casual Polo",
+        "category": "T-Shirts",
+        "image": "https://images.unsplash.com/photo-1512436991641-6745cdb1723f",
+        "originalPrice": 1699,
+        "sellingPrice": 1199,
+        "description": "Comfortable casual polo t-shirt"
+    },
+    {
+        "id": 7,
+        "name": "Winter Puffer Jacket",
+        "category": "Jackets",
+        "image": "https://images.unsplash.com/photo-1618354691345-78ad7f5b09ef",
+        "originalPrice": 5999,
+        "sellingPrice": 4499,
+        "description": "Warm winter puffer jacket"
+    },
+    {
+        "id": 8,
+        "name": "Black Formal Suit",
+        "category": "Suits",
+        "image": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab",
+        "originalPrice": 8999,
+        "sellingPrice": 6999,
+        "description": "Premium black formal suit"
+    },
+    {
+        "id": 9,
+        "name": "Maroon Sweatshirt",
+        "category": "Sweatshirts",
+        "image": "https://images.unsplash.com/photo-1602810318383-e386cc2a3a56",
+        "originalPrice": 2499,
+        "sellingPrice": 1899,
+        "description": "Cozy maroon sweatshirt"
+    },
+    {
+        "id": 10,
+        "name": "Classic Denim Jacket",
+        "category": "Jackets",
+        "image": "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c",
+        "originalPrice": 4599,
+        "sellingPrice": 3299,
+        "description": "Timeless blue denim jacket made with premium fabric"
+    }
+]
