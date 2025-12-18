@@ -23,7 +23,7 @@ const Footer = () => {
                 </div>
 
                 {/* Center Navigation */}
-                <nav className="flex flex-wrapjustify-center gap-8">
+                <nav className="flex flex-wrap justify-center gap-8">
                     {['Cookies', 'Privacy Policy', 'Terms', 'Sitemap'].map((item) => (
                         <a
                             key={item}
