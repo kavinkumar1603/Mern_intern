@@ -7,6 +7,7 @@ import AdminPage from "./components/AdminPage.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
 import Login from "./components/Login.jsx";
+import SignUp from "./components/SignUp.jsx";
 import Orders from "./components/Orders.jsx";
 import ProductDetail from "./components/ProductDetail.jsx";
 import Header from "./components/Header.jsx";
@@ -20,6 +21,7 @@ createRoot(document.getElementById("root")).render(
     <Toaster />
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<SignUp />} />
 
       <Route path="/" element={<App />} />
 
