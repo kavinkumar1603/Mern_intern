@@ -12,6 +12,7 @@ import ProductDetail from "./components/ProductDetail.jsx";
 import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
 import TopProducts from "./components/TopProducts.jsx";
+import OrderSuccess from "./components/OrderSuccess.jsx";
 import { Toaster } from "react-hot-toast";
 
 createRoot(document.getElementById("root")).render(
@@ -69,6 +70,21 @@ createRoot(document.getElementById("root")).render(
               <Header />
               <div className="grow">
                 <Orders />
+              </div>
+              <Footer />
+            </div>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/order-success"
+        element={
+          <ProtectedRoute>
+            <div className="min-h-screen flex flex-col">
+              <Header />
+              <div className="grow">
+                <OrderSuccess />
               </div>
               <Footer />
             </div>

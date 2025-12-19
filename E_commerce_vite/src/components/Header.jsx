@@ -69,7 +69,7 @@ const Header = () => {
                 <div className="max-w-[1400px] mx-auto px-6 flex justify-between items-center">
                     {/* Logo */}
                     <Link to="/" onClick={() => setMobileMenuOpen(false)} className="text-2xl font-black tracking-tighter uppercase transition-colors text-black z-50 relative">
-                        Aurevia
+                        LUXORA
                     </Link>
 
                     {/* Desktop Navigation Links */}

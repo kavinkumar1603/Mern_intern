@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router";
 import Card from "./Card";
 import { motion, AnimatePresence } from "framer-motion"; // eslint-disable-line no-unused-vars
 
@@ -15,10 +16,12 @@ const Products = ({ products = [] }) => {
         return products.filter(p => p.category.toLowerCase() === activeFilter);
     }, [products, activeFilter]);
 
+    const navigate = useNavigate();
+
     const addToCart = async (product) => {
         const token = sessionStorage.getItem('token');
         if (!token) {
-            alert("Please login to add items to cart");
+            navigate('/login');
             return;
         }
 

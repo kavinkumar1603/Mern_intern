@@ -70,7 +70,7 @@ const Login = () => {
                     style={{ backgroundImage: `url(${hero1})` }}
                 />
                 <div className="absolute inset-0 flex flex-col justify-between p-12 z-10">
-                    <Link to="/" className="text-white text-2xl font-black tracking-tighter uppercase">Aurevia</Link>
+                    <Link to="/" className="text-white text-2xl font-black tracking-tighter uppercase">LUXORA</Link>
                     <div>
                         <h1 className="text-6xl font-black text-white leading-none tracking-tighter mb-4">
                             ELEVATE <br /> YOUR STYLE.

@@ -16,9 +16,9 @@ const Footer = () => {
 
                 {/* Left text */}
                 <div className="flex flex-col items-center md:items-start gap-2">
-                    <span className="text-2xl font-black tracking-tighter uppercase">Aurevia</span>
+                    <span className="text-2xl font-black tracking-tighter uppercase">LUXORA</span>
                     <span className="text-[10px] font-bold tracking-widest text-gray-500 uppercase">
-                        © 2025 Aurevia Inc. All Rights Reserved.
+                        © 2025 LUXORA Inc. All Rights Reserved.
                     </span>
                 </div>
 
